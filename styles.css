@@ -1,0 +1,70 @@
+/* #1B4965 Indigo Dye #62B6CB Maximum Blue* #CAE9FF Columbia Blue #5FAD3 Carolina Blue #BEE9E8 Powder Blue */
+
+:root{
+    --gamegrid-width: 40%;
+    --gamegrid-height: 30rem;
+    --main-background: #1B4965;
+    /* --choice-background: rgba(165, 42, 42, 0.137); */
+    --square-color: rgba(245,245,245, 0.85);
+    --border-color: rgba(0,0,0,0.25);
+    --root-html-size: 1rem;
+    --main-margin: 4rem;
+}
+
+html, body{
+    font-size: var(--root-html-size);
+    padding: 0;
+    margin: 0;
+    background-color: var(--main-background);
+}
+
+h1{
+    color: white;
+    text-align: center;
+    font-size: calc(var(--root-html-size) * 4);
+    padding: 0;
+    margin: 0;
+    margin-top: 2rem;
+}
+
+/*DIVs*/
+
+#shipchoice{
+    height: calc(var(--gamegrid-height) * 0.20);
+    background-color: var(--choice-background);
+    margin-top: calc(var(--main-margin) * 0.5);
+    /* border: 1px solid brown; */
+    display: flex;
+    flex-direction: row;
+}
+
+#maingameplay{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+}
+
+.gamegrid{
+    border: none;
+    display: grid;
+    grid-template-columns: repeat(10, 1fr);
+    grid-template-rows: repeat(10, 1fr);
+    width: var(--gamegrid-width);
+    height: var(--gamegrid-height);
+    cursor: pointer;
+    margin-top: var(--main-margin);
+}
+
+/*Classes*/
+
+.square{
+    border: 1px solid var(--border-color);
+    background-color: var(--square-color);
+    width: calc(var(--gamegrid-width) * 0.10px);
+    height: calc(var(--gamegrid-height) * 0.10px);
+}
+
+.square:hover{
+    background-color: #62B6CB;
+    background-color: brown;
+}
