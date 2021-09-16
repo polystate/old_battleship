@@ -5,27 +5,50 @@ const Ship = require('./ship');
 const gameBoard = () => {
     const gridArr = Array.from({length: 100}, (value, key) => key);
     
-    const shipOrigin = (arr,length,origin,name) => {
-        arr[origin] = JSON.stringify(Ship(length,name,origin));
-        return arr;
+    const shipOrigin = (length,origin,name) => {
+        if(isNaN(gridArr[origin])) return;
+        gridArr[origin] = JSON.stringify(Ship(length,name,origin));
+        return gridArr;
     }
 
-    const placeShipVertical = (arr,origin) => {
-        const length = JSON.parse(arr[origin]).shipLength;
-        if((origin - 1) + (length * 10) > 99) return;
+    const placeShipVertical = (origin) => {
+        if(!isNaN(gridArr[origin])){
+            return;
+        } 
+        const length = JSON.parse(gridArr[origin]).shipLength;
+        if((origin - 1) + (length * 10) > 99){
+            gridArr[origin] = origin;
+            return;
+        } 
         for(let i = 10; i < length * 10; i+=10){
-            arr[origin + i] = arr[origin];
+            if(isNaN(gridArr[origin + i])){
+                gridArr[origin] = origin;
+                return;
+            } 
         }
-        return arr;
+        for(let i = 10; i < length * 10; i+=10){
+            gridArr[origin + i] = gridArr[origin];
+        }
+        return gridArr;
     }
 
-    const placeShipHorizontal = (arr,origin) => {
-        const length = JSON.parse(arr[origin]).shipLength;
-        if(origin + (length-1) > rowEdgeCase(origin)) return;
+    const placeShipHorizontal = (origin) => {
+        if(!isNaN(gridArr[origin])) return;
+        const length = JSON.parse(gridArr[origin]).shipLength;
+        if(origin + (length-1) > rowEdgeCase(origin)){
+            gridArr[origin] = origin;
+            return;
+        } 
         for(let i = 1; i < length; i++){
-        arr[origin + i] = arr[origin];
+            if(isNaN(gridArr[origin + i])){
+                gridArr[origin] = origin;
+                return;
+            } 
         }
-        return arr;
+        for(let i = 1; i < length; i++){
+        gridArr[origin + i] = gridArr[origin];
+        }
+        return gridArr;
     }
 
     const rowEdgeCase = (origin) => {
@@ -34,9 +57,17 @@ const gameBoard = () => {
         edgecases = edgecases[edgecases.length-1];
         return edgecases;
     }
+
+    const receiveAttack = (origin) => {
+        if(!isNaN(gridArr[origin])) return "It missed!";
+        return `It has been hit!`
+    }
+
+
     
 
-    return { gridArr, shipOrigin, placeShipVertical, placeShipHorizontal };
+    return { gridArr, shipOrigin, placeShipVertical, placeShipHorizontal, receiveAttack };
 }
+
 
 module.exports = gameBoard;
