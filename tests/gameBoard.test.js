@@ -2,6 +2,10 @@
 const gameBoard = require('../js_code/gameBoard');
 const Ship = require('../js_code/ship');
 
+//Test Variables
+
+const testOriginBoard = gameBoard(6);
+
 //Helper functions for tests
 
 function placeOrigin(arr,length,origin,name){
@@ -26,8 +30,25 @@ function shipPlacementHorizontal(arr,length,origin,name){
     return arr;
 }
 
-//Test Variables
-const testOriginBoard = gameBoard();
+function attackShip(arr,name){
+    for(let prop in arr){
+        if(typeof(arr[prop]) === "string"){
+            arr[prop] = JSON.parse(arr[prop]);
+            if(arr[prop].shipName === name){
+            arr[prop].shipLength = arr[prop].shipLength - 1;
+            if(arr[prop].shipLength === 0) {
+                arr.shipCount--;
+            };
+            arr[prop].shipBody = new Array(arr[prop].shipLength).fill(true);
+            }
+            arr[prop] = JSON.stringify(arr[prop]);
+        }
+    }
+    arr[origin] = false;
+    return arr;
+}
+
+
 
 
 
@@ -36,10 +57,10 @@ const testOriginBoard = gameBoard();
     describe('select origin point of ship and return array with a single ship object at that origin', () => {
        
         test('place ship of length-3 at origin-3 for player', () => {
-              expect(testOriginBoard.shipOrigin(3,3)).toEqual(placeOrigin(testOriginBoard.gridArr,3,3));
+              expect(testOriginBoard.shipOrigin(3,3,'Johnny')).toEqual(placeOrigin(testOriginBoard.gridArr,3,3));
         });
         test('place ship of length-5 at origin-50 for player', () => {
-            expect(testOriginBoard.shipOrigin(5,50)).toEqual(placeOrigin(testOriginBoard.gridArr,5,50));
+            expect(testOriginBoard.shipOrigin(5,50,'Omega')).toEqual(placeOrigin(testOriginBoard.gridArr,5,50));
       });
         test('placing ship on origin-3 returns undefined as there is already a ship there', () => {
             expect(testOriginBoard.shipOrigin(3,3)).toBe(undefined);
@@ -54,10 +75,10 @@ const testOriginBoard = gameBoard();
 
     describe('{actually place} ship on origin with vertical alignment and length and return array', () => {
         test('stretch ship of length-3 at origin-3 vertically', () => {
-            expect(testOriginBoard.placeShipVertical(3)).toEqual(shipPlacementVertical(testOriginBoard.gridArr,3,3));
+            expect(testOriginBoard.placeShipVertical(3)).toEqual(shipPlacementVertical(testOriginBoard.gridArr,3,3,'Johnny'));
         })
         test('stretch ship of length-5 at origin-50 vertically', () => {
-            expect(testOriginBoard.placeShipVertical(50)).toEqual(shipPlacementVertical(testOriginBoard.gridArr,5,50));
+            expect(testOriginBoard.placeShipVertical(50)).toEqual(shipPlacementVertical(testOriginBoard.gridArr,5,50,'Omega'));
         })
         // test('random tests', () => {
         //     testOriginBoard.shipOrigin(5,0);
@@ -88,8 +109,8 @@ const testOriginBoard = gameBoard();
 
     describe('{actually place} ship on origin with horizontal alignment and length and return array', () => {
         test('place ship of length-3 at origin-7 horizontally', () => {
-            testOriginBoard.shipOrigin(3,7);
-            expect(testOriginBoard.placeShipHorizontal(7)).toEqual(shipPlacementHorizontal(testOriginBoard.gridArr,3,7));
+            testOriginBoard.shipOrigin(3,7,'Chuckie');
+            expect(testOriginBoard.placeShipHorizontal(7)).toEqual(shipPlacementHorizontal(testOriginBoard.gridArr,3,7,'Chuckie'));
         })
         test('place ship of length-4 at origin-33 horizontally', () => {
             testOriginBoard.shipOrigin(4,33);
@@ -112,25 +133,63 @@ const testOriginBoard = gameBoard();
         test('any ship who is stretched horizontally and overlaps with another existing ship object should return undefined', () => {
             testOriginBoard.shipOrigin(3,31);
             expect(testOriginBoard.placeShipHorizontal(31)).toEqual(undefined);
-            
             testOriginBoard.shipOrigin(4,20);
             expect(testOriginBoard.placeShipHorizontal(20)).toEqual(undefined);
-            console.log(testOriginBoard);
         })
     })
 
 
-    // describe('place a ship at certain position and give it a name as well', () => {
-    //     test('give the name [Courier] to ship placed at origin 12 with length of 3 horizontally', () => {
-    //         expect(gameBoard().placeShipHorizontal(gameBoard().shipOrigin(gameBoard().gridArr,3,12,'Courier'),12,'horizontal','Courier')).toEqual(shipPlacementHorizontal(3,12,'Courier'));
-    //     })
-    // })
+    describe('place a ship at certain position and give it a name as well', () => {
+        test('give the name [Courier] to ship placed at origin 27 with length of 3 horizontally', () => {
+            testOriginBoard.shipOrigin(3,27,'Courier');
+            expect(testOriginBoard.placeShipHorizontal(27)).toEqual(shipPlacementHorizontal(testOriginBoard.gridArr,3,27,'Courier'))
+        })
+    })
 
-    // describe('receiveAttack function takes a position on the array, and if a Ship object is present there, it should send a hit function to the correct ship based on its name, or record the coordinates of the missed shot and log that it missed', () => {
-    //     test('receiveAttack receives origin 0 and tells us there is no ship there and that it missed', () => {
-    //         expect(gameBoard().receiveAttack(gameBoard().gridArr,0)).toBe("It missed!");
-    //     })
-    //     test('receiveAttack receives origin 7 and tells us there is a ship of length 1 there and that it has hit', () => {
-    //         expect(gameBoard().receiveAttack(gameBoard().shipOrigin(gameBoard().gridArr,1,7,'Courier'),7)).toBe(`It has been hit!`);
-    //     })
-    // })
+    describe('receiveAttack function takes a position on the array, and if a Ship object is present there, it should send a hit function to the correct ship based on its name, or record the coordinates of the missed shot and log that it missed, it should also mark the missed shot with[null] or something at the proper array origin to keep tabs', () => {
+        test('receiveAttack receives origin 0 and tells us there is no ship there and that it missed, marking [null] on origin 0 in gridArr', () => {
+            let testOriginBoardClone = JSON.parse(JSON.stringify(testOriginBoard));
+            testOriginBoardClone.gridArr[0] = null;
+            expect(testOriginBoard.receiveAttack(0)).toEqual(testOriginBoardClone.gridArr);
+            testOriginBoardClone.gridArr[63] = null;
+            expect(testOriginBoard.receiveAttack(63)).toEqual(testOriginBoardClone.gridArr);
+        })
+        test('receiveAttack receives origin 7 and shipName Chuckie and tells us there is a ship of length 3 there and that it has hit, marking origin 7 as [false] and getting rid of the ship Obj that was there', () => {
+            let testOriginBoardClone = JSON.parse(JSON.stringify(testOriginBoard));
+            testOriginBoardClone.gridArr[7] = false;
+            testOriginBoardClone.gridArr[8] = JSON.stringify({"shipBody":[true,true],"shipLength":2,"shipName":"Chuckie","shipOrigin":7});
+            testOriginBoardClone.gridArr[9] = JSON.stringify({"shipBody":[true,true],"shipLength":2,"shipName":"Chuckie","shipOrigin":7});
+            expect(testOriginBoard.receiveAttack(7,"Chuckie")).toEqual(testOriginBoardClone.gridArr);
+        })
+        test('receiveAttack receives origin 9 and shipName Chuckie and tells us there is a ship of length 2 there (same ship as previous but now has length 2) marking origin 9 as [false] and getting rid of ship Obj that was there', () => {
+            let testOriginBoardClone = JSON.parse(JSON.stringify(testOriginBoard));
+            testOriginBoardClone.gridArr[7] = false;
+            testOriginBoardClone.gridArr[8] = JSON.stringify({"shipBody":[true],"shipLength":1,"shipName":"Chuckie","shipOrigin":7});
+            testOriginBoardClone.gridArr[9] = false;
+            expect(testOriginBoard.receiveAttack(9,"Chuckie")).toEqual(testOriginBoardClone.gridArr);
+        })
+        test('receiveAttack receives origin 8 and kills shipName Chuckie as his shipLength moves to 0, leaving {status: ShipName has died!} behind. Our test gameBoard() should have 6 ships placed on it before Chuckie was killed and our gameBoards shipCount should now read as 5', () => {
+            let testOriginBoardClone = JSON.parse(JSON.stringify(testOriginBoard));
+            // const shipDeathName = JSON.parse(testOriginBoardClone.gridArr[8]).shipName;
+            testOriginBoardClone.gridArr[7] = false;
+            testOriginBoardClone.gridArr[8] = false;
+            testOriginBoardClone.gridArr[9] = false;
+            expect(testOriginBoard.receiveAttack(8,"Chuckie")).toEqual(testOriginBoardClone.gridArr);
+            expect(testOriginBoard.getShipCount()).toBe(5);
+            
+            testOriginBoardClone.gridArr[3] = JSON.stringify({"shipBody":[true,true],"shipLength":2,"shipName":"Johnny","shipOrigin":3});
+            testOriginBoardClone.gridArr[13] = false;
+            testOriginBoardClone.gridArr[23] = JSON.stringify({"shipBody":[true,true],"shipLength":2,"shipName":"Johnny","shipOrigin":3});
+            expect(testOriginBoard.receiveAttack(13,"Johnny")).toEqual(testOriginBoardClone.gridArr);
+            testOriginBoardClone.gridArr[3] = JSON.stringify({"shipBody":[true],"shipLength":1,"shipName":"Johnny","shipOrigin":3});
+            testOriginBoardClone.gridArr[13] = false;
+            testOriginBoardClone.gridArr[23] = false;
+            expect(testOriginBoard.receiveAttack(23,"Johnny")).toEqual(testOriginBoardClone.gridArr);
+            testOriginBoardClone.gridArr[3] = false;
+            testOriginBoardClone.gridArr[13] = false;
+            testOriginBoardClone.gridArr[23] = false;
+            expect(testOriginBoard.receiveAttack(3,"Johnny")).toEqual(testOriginBoardClone.gridArr);
+            expect(testOriginBoard.getShipCount()).toBe(4);
+            
+        })
+    })
