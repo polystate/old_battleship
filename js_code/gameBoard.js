@@ -1,18 +1,22 @@
-const Ship = require('./ship');
+// const Ship = require('./ship');
 
 //Game Board Factory Function
 
 const gameBoard = (numships) => {
     const gridArr = Array.from({length: 100}, (value, key) => key);
     let shipCount = numships;
+    let shipObjCount = 17;
+    let recurseCount = 0;
     
     const shipOrigin = (length,origin,name) => {
+        if(gridArr[origin] === undefined) return;
         if(isNaN(gridArr[origin])) return;
         gridArr[origin] = JSON.stringify(Ship(length,name,origin));
         return gridArr;
     }
 
     const placeShipVertical = (origin) => {
+
         if(!isNaN(gridArr[origin])){
             return;
         } 
@@ -30,6 +34,7 @@ const gameBoard = (numships) => {
         for(let i = 10; i < length * 10; i+=10){
             gridArr[origin + i] = gridArr[origin];
         }
+        recurseCount++;
         return gridArr;
     }
 
@@ -49,6 +54,7 @@ const gameBoard = (numships) => {
         for(let i = 1; i < length; i++){
         gridArr[origin + i] = gridArr[origin];
         }
+        recurseCount++;
         return gridArr;
     }
 
@@ -60,66 +66,42 @@ const gameBoard = (numships) => {
     }
 
     const playerPlaceShip = (length,origin,name,alignment) => {
+        if(!shipOrigin(length,origin,name)) return;
         shipOrigin(length,origin,name);
         if(alignment === "vertical"){
         placeShipVertical(origin);
         } else if(alignment === "horizontal") {
             placeShipHorizontal(origin);
-        } else{
-            console.log("neither of these were ran");
-        }
-        
-    }
+        } 
+    };
 
     const placeShipsRandom = () => {
         const alignments = ['vertical','horizontal'];
-        const lengthArr = [5,4,3,3,2];
+        const lengthArr = [5, 4, 3, 3, 2];
         const nameArr = ['Carrier','Battleship','Destroyer','Submarine','Patrol Boat'];
-        count = 0;
         
-        function placeOneShip(length,name){
-            // if(count === 5) return;
-            let randOrigin = Math.floor(Math.random()*100);
-            let alignment = alignments[Math.floor(Math.random() * 2)];
-            playerPlaceShip(length,randOrigin,name,alignment);
-            // if(isNaN(gridArr[randOrigin])){
-            //     count++;
-            // } else {
-            //     return placeOneShip(length,name);
-            // }
-            if(isNaN(gridArr[randOrigin])){
-                return placeOneShip(length,name);
-            } else count++;
-            // if(typeof(gridArr[randOrigin]) === "string"){
-            //     console.log(typeof(gridArr[randOrigin]));
-            //     return placeOneShip(length,name);
-            // } else if(typeof(gridArr[randOrigin]) === "number"){
-            //     console.log(typeof(gridArr[randOrigin]));
-            //     count++;
-            // }
+        function placeOneShip(){
+            let randAlignment = Math.floor(Math.random() * alignments.length);
+            let unselectedOrigins = gridArr.filter(elem => typeof(elem) === "number");
+            let randOrigin = unselectedOrigins[Math.floor(Math.random() * unselectedOrigins.length)];
+            
+            playerPlaceShip(lengthArr[recurseCount],randOrigin,nameArr[recurseCount],alignments[randAlignment]);
+            
+            if(recurseCount < 5){
+                placeOneShip()
+            }
         }
 
-        for(let i = 0; i < 5; i++){
-            placeOneShip(lengthArr[i],nameArr[i]);
-        }
+        placeOneShip();
 
         let currentShips = gridArr.filter(elem => typeof(elem) === "string");
         currentShips = new Set(currentShips);
+        console.log(currentShips);
+        // console.log(gridArr);
+        
 
-        //Loop through your lengthArr, nameArr, etc.
-        //Each loop, generate a random number 1, 100 for randOrigin
-        //First loop-through should attempt to place 'Carrier', length of 5 with random alignment. 
-        //If it succeeds, increment count++, if it fails, restart that particular instance of loop with 'Carrier' and length of 5 until it succeeds 
-        //Once it succeeds it should keep going until all five ships are placed
-
-        ///////
-
-        //The main question of the bug is. Why is one of them running two times and we are getting 4 instead of 5 for our unique values? It's forcing itself to print one of them twice to complete the for(loop) for some reason
-
-        //Possible explanation. There's a bug with our placeOrigin code. So basically we place a ship there, and if we place another ship there and if we attempt to put another ship there and it returns undefined, it being undefined interferes with our recursion somehow
-
-       return {count, gridArr, currentShips};
-    }
+       return { gridArr, currentShips, recurseCount };
+    };
 
     const receiveAttack = (origin,name) => {
         if(gridArr[origin] === false || gridArr[origin] === null) return;
@@ -130,17 +112,18 @@ const gameBoard = (numships) => {
         for(let prop in gridArr){
             if(typeof(gridArr[prop]) === "string"){
                 gridArr[prop] = JSON.parse(gridArr[prop]);
+                name = gridArr[prop].shipName;
                 if(gridArr[prop].shipName === name){
                 gridArr[prop].shipLength = gridArr[prop].shipLength - 1;
                 if(gridArr[prop].shipLength === 0) {
                     shipCount--;
                 };
-                gridArr[prop].shipBody = new Array(gridArr[prop].shipLength).fill(true);
                 }
                 gridArr[prop] = JSON.stringify(gridArr[prop]);
             }
         }
         gridArr[origin] = false;
+        shipObjCount--;
         return gridArr;
     }
 
@@ -148,15 +131,19 @@ const gameBoard = (numships) => {
         return shipCount;
     }
 
-    const isGameOver = () => {
-        return (!shipCount) ? true : false;
+    const getCurrentCount = () => {
+        return shipObjCount;
     }
 
-    return { gridArr, getShipCount, shipOrigin, placeShipVertical, placeShipHorizontal, placeShipsRandom, receiveAttack, isGameOver };
+    const isGameOver = () => {
+        return (!getCurrentCount()) ? true : false;
+    }
+
+    return { gridArr, recurseCount, shipCount, getShipCount, shipOrigin, placeShipVertical, placeShipHorizontal, placeShipsRandom, receiveAttack, isGameOver, playerPlaceShip, getCurrentCount };
 }
 
 
-module.exports = gameBoard;
+// module.exports = gameBoard;
 
 
 

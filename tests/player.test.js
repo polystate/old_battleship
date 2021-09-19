@@ -18,7 +18,7 @@ function playerPlaceShip(player,length,origin,name,alignment){
 //Tests
 
 describe('Player factory function is created and each player gets their own separate gameBoard', () => {
-    test('gameBoard initialized with player with five ships on count', () => {
+    test('gameBoard initialized with player with zero ships on count', () => {
         expect(mockPlayer.myBoard.getShipCount()).toBe(5);
         expect(mockPlayer.pickEnemyTarget(2)).toBe(2);
     })
@@ -37,16 +37,20 @@ describe('Player should be able to place their five ships on the grid', () => {
         expect(mockPlayer.myBoard.getShipCount()).toBe(5);
 })
 
-describe('Player or computer should be able to place their five ships randomly on the grid... run test a bunch of times to make sure', () => {
+// describe('Player or computer should be able to place their five ships randomly on the grid... run test a bunch of times to make sure', () => {
+//     test('Test', () => {
+//     expect(mockComp.myBoard.recurseCount).toBe(0);
+//     })
+//     test('test 2', () => {
+      
+
+//     })
     
-    expect(mockComp.myBoard.placeShipsRandom().count).toBe(5);
-    console.log(mockComp.myBoard.gridArr);
-    //check to make sure there are five distinctive shipNames
-    let ensureUnique = mockComp.myBoard.gridArr.filter(elem => typeof(elem) === "string");
-    ensureUnique = new Set(ensureUnique);
-    expect(ensureUnique.size).toBe(5);
-})
+// })
 
-
-
-
+// describe('Player or computer should be able to place their five ships randomly on the grid... run test a bunch of times to make sure', () => {
+//     test
+//     console.log(mockComp.myBoard.placeShipsRandom());
+    
+    
+// })

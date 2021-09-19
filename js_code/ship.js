@@ -4,8 +4,8 @@
 
 const Ship = (length,name,origin) => {
     //Main attributes
-    const shipBody = new Array(length).fill(true);
-    const shipLength = shipBody.length;
+    // const shipBody = new Array(length).fill(true);
+    const shipLength = length;
     const shipName = name;
     const shipOrigin = origin;
 
@@ -19,10 +19,10 @@ const Ship = (length,name,origin) => {
         } else return false;
     }
 
-    return { shipBody, shipLength, shipName, shipOrigin, getHit, isSunk };
+    return { shipLength, shipName, shipOrigin, getHit, isSunk };
 }
 
-module.exports = Ship;
+// module.exports = Ship;
 
 
 
