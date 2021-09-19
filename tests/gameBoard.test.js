@@ -30,7 +30,7 @@ function shipPlacementHorizontal(arr,length,origin,name){
     return arr;
 }
 
-function attackShip(arr,name){
+function attackShip(arr,origin,name){
     for(let prop in arr){
         if(typeof(arr[prop]) === "string"){
             arr[prop] = JSON.parse(arr[prop]);
@@ -113,12 +113,12 @@ function attackShip(arr,name){
             expect(testOriginBoard.placeShipHorizontal(7)).toEqual(shipPlacementHorizontal(testOriginBoard.gridArr,3,7,'Chuckie'));
         })
         test('place ship of length-4 at origin-33 horizontally', () => {
-            testOriginBoard.shipOrigin(4,33);
-            expect(testOriginBoard.placeShipHorizontal(33)).toEqual(shipPlacementHorizontal(testOriginBoard.gridArr,4,33));
+            testOriginBoard.shipOrigin(4,33,"Octo");
+            expect(testOriginBoard.placeShipHorizontal(33)).toEqual(shipPlacementHorizontal(testOriginBoard.gridArr,4,33,"Octo"));
         })
         test('place ship of length-2 at origin-18 horizontally', () => {
-            testOriginBoard.shipOrigin(2,18);
-            expect(testOriginBoard.placeShipHorizontal(18)).toEqual(shipPlacementHorizontal(testOriginBoard.gridArr,2,18));
+            testOriginBoard.shipOrigin(2,18,"Deuce");
+            expect(testOriginBoard.placeShipHorizontal(18)).toEqual(shipPlacementHorizontal(testOriginBoard.gridArr,2,18,"Deuce"));
             
         })
         test('any ship who exceeds the horizontal edgecases of any multiple of 9 to 99 [i.e. 9 for first origin row, 19 for second origin row, 29 for third origin row, etc.] has gone out of bounds horizontally and it should return undefined', () => {
@@ -193,3 +193,38 @@ function attackShip(arr,name){
             
         })
     })
+
+    describe('firing a shot at a place you already fired - [null] or a ship obj place that was previously destroyed - [false] should return undefined and nothing should happen', () => {
+        test('firing a shot at origin-23 returns undefined because a previous ship obj was already destroyed there -[false]', () => {
+            expect(testOriginBoard.receiveAttack(23)).toBe(undefined);
+            expect(testOriginBoard.receiveAttack(3)).toBe(undefined);
+        })
+        test('firing a shot at origin 63 - [null], which was a place that was already fired, should return undefined and nothing should happen', () => {
+            expect(testOriginBoard.receiveAttack(63)).toBe(undefined);
+            expect(testOriginBoard.receiveAttack(0)).toBe(undefined);
+        })
+    })
+
+    describe('if all of the gameBoard ships are destroyed it will report it back', () => {
+        test('use loop to destroy all of the ships on our real array', () => {
+            for(let i = 50; i <= 90; i+=10){
+            testOriginBoard.receiveAttack(i,'Omega');
+            }
+            expect(testOriginBoard.getShipCount()).toBe(3);
+            for(let i = 27; i <= 29; i++){
+                testOriginBoard.receiveAttack(i,'Courier');
+            }
+            expect(testOriginBoard.getShipCount()).toBe(2);
+            expect(testOriginBoard.isGameOver()).toBe(false);
+            for(let i = 33; i <= 36; i++){
+                testOriginBoard.receiveAttack(i,'Octo');
+            }
+            expect(testOriginBoard.getShipCount()).toBe(1);
+            testOriginBoard.receiveAttack(18,"Deuce");
+            testOriginBoard.receiveAttack(19,"Deuce");
+            expect(testOriginBoard.getShipCount()).toBe(0);
+            expect(testOriginBoard.isGameOver()).toBe(true);
+        })
+    })
+
+    
