@@ -5,21 +5,33 @@
 
 //Factory Function
 
-const Player = (ships) => {
+const Player = (ships, playertype, difficulty) => {
+    let isPlayerTurn = false;
     const myBoard = gameBoard(ships);
     
     const attackEnemy = (enemy,origin) => {
         return enemy.myBoard.receiveAttack(origin);
     }
 
+    const swapPlayerTurn = () => {
+        isPlayerTurn = !isPlayerTurn;
+    }
+
+    const getPlayerTurn = () => {
+        return isPlayerTurn;
+    }
+
     let indices = Array.from({length: 100}, (value, key) => key);
 
     const randomAttack = (enemy) => {
+        if(difficulty === "easy"){
         let randIndex = indices[Math.floor(Math.random() * indices.length)];
         indices.splice(indices.indexOf(randIndex),1);
-        return enemy.myBoard.receiveAttack(randIndex);
+        enemy.myBoard.receiveAttack(randIndex);
+        return randIndex;
+        }
     }
-    return { myBoard, attackEnemy, randomAttack };
+    return { myBoard, attackEnemy, randomAttack, getPlayerTurn, swapPlayerTurn, playertype };
 }
 
 

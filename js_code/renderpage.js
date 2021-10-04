@@ -21,54 +21,78 @@ const displayHTML = () => {
     }
     }
     createPlayerGrid("p1grid");
-    createPlayerGrid("compgrid");
-
+    createPlayerGrid("p2grid");
 }
 
-const connectBoards = () => {
+
+
+const gamePlay = () => {
     const p1DOMgrid = document.getElementById("p1grid");
-    const compDOMgrid = document.getElementById("compgrid");
-    const playerGrid = Player(5);
-    const compGrid = Player(5);
-    let changeTurn = true;
-    compGrid.myBoard.placeShipsRandom();
+    const p2DOMgrid = document.getElementById("p2grid");
+    const playerGrid = Player(5,"player");
+    const player2Grid = Player(5,"computer","easy");
+    playerGrid.swapPlayerTurn();
+    player2Grid.myBoard.placeShipsRandom();
     playerGrid.myBoard.placeShipsRandom();
 
     const syncBoard = (board,thisgrid,othergrid) => {
         board.childNodes.forEach(square => {
             square.addEventListener('click', function attackSquare(){
-                let squareID = square.id.substr(square.id.indexOf('-') + 1);
-                thisgrid.attackEnemy(othergrid, squareID);
-                changeSquareColor(othergrid, square, squareID);
-                square.removeEventListener('click',attackSquare);
+                if(thisgrid.getPlayerTurn() && thisgrid.playertype === "player"){
+                    let squareID = square.id.substr(square.id.indexOf('-') + 1);
+                    thisgrid.attackEnemy(othergrid, squareID);
+                    changeSquareColor(othergrid, square, squareID);
+                    square.removeEventListener('click',attackSquare);
+                    thisgrid.swapPlayerTurn();
+                    othergrid.swapPlayerTurn();
+                    if(othergrid.myBoard.isGameOver()){
+                        console.log("Computer has lost!");
+                        stopGame();
+                    }
+                    checkComputerTurn();
+                } 
             })
         })
     }
 
     const changeSquareColor = (board,square,squareID) => {
         if(board.myBoard.gridArr[squareID] === null){
-            console.log(square);
             square.style = "background-color: black";
         } else if(board.myBoard.gridArr[squareID] === false){
             square.style = "background-color: green";
         } 
     }
 
-
+    const checkComputerTurn = () => {
+    if(player2Grid.getPlayerTurn() && player2Grid.playertype === "computer"){
+        let squareID = player2Grid.randomAttack(playerGrid);
+        changeSquareColor(playerGrid,p1DOMgrid.childNodes[squareID],squareID);
+        playerGrid.swapPlayerTurn();
+        player2Grid.swapPlayerTurn();
+    }
     
-    syncBoard(p1DOMgrid, compGrid, playerGrid);
-    syncBoard(compDOMgrid, playerGrid, compGrid);
+    if(playerGrid.myBoard.isGameOver()){
+        console.log("Player 1 has lost!");
+        stopGame();
+    }
+    }
 
-    
+    const stopGame = () => {
+        p1DOMgrid.style = "pointer-events: none;"
+        p2DOMgrid.style = "pointer-events: none;"
+    }
 
+    syncBoard(p1DOMgrid, player2Grid, playerGrid);
+    syncBoard(p2DOMgrid, playerGrid, player2Grid);
+
+    return { stopGame };
 }
 
 //Render page IIFE
 
 const renderPage = (() => {
     displayHTML();
-    connectBoards();
-
+    gamePlay();
 })();
 
 // module.exports = renderGame;
