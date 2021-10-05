@@ -58,9 +58,9 @@ const gamePlay = () => {
 
     const changeSquareColor = (board,square,squareID) => {
         if(board.myBoard.gridArr[squareID] === null){
-            square.style = "background-color: black; opacity: 0.5";
+            square.style = "background-image: url('notfound.png'); background-repeat: no-repeat; background-size: cover; background-position: center center; opacity: 0.5";
         } else if(board.myBoard.gridArr[squareID] === false){
-            square.style = "background-color: green; opacity: 0.75";
+            square.style = "background-image: url('ship.png'); background-repeat: no-repeat; background-size: cover; background-position: center center;";
         } 
     }
 
