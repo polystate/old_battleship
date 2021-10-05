@@ -21,16 +21,92 @@ const Player = (ships, playertype, difficulty) => {
         return isPlayerTurn;
     }
 
+    const getCurrentDestroyedIndexes = (enemy) => {
+        let destroyedIndexes = [];
+            for(let i = 0; i < enemy.myBoard.gridArr.length; i++){
+                if(enemy.myBoard.gridArr[i] === false){
+                    destroyedIndexes.push(i);
+                }
+            }
+        return destroyedIndexes;
+    }
+
+    const chooseRandomDestroyedIndex = (arr) => {
+        return arr[Math.floor(Math.random() * arr.length)];
+    }
+
+    const getSurroundingIndexes = (index) => {
+        let indexArr = [index-10-1,index-10,index-10+1,index-1,index+1,index+10-1,index+10,index+10+1];
+        indexArr = indexArr.filter(function(index){
+            return index >= 0 && index <= 99
+        })
+       
+        return indexArr;
+    }
+
+    const filterSurroundingIndexes = (enemy, arr) => {
+        let filteredIndexes = [];
+        for(let i = 0; i < arr.length; i++){
+            if(enemy.myBoard.gridArr[arr[i]]){
+                filteredIndexes.push(arr[i]);
+            }
+        }
+        
+        return filteredIndexes;
+    }
+
+    
+
+    
+    
     let indices = Array.from({length: 100}, (value, key) => key);
 
     const randomAttack = (enemy) => {
-        if(difficulty === "easy"){
-        let randIndex = indices[Math.floor(Math.random() * indices.length)];
-        indices.splice(indices.indexOf(randIndex),1);
-        enemy.myBoard.receiveAttack(randIndex);
-        return randIndex;
+
+        const mindlessAttack = (enemy) => {
+            
+            let randIndex = indices[Math.floor(Math.random() * indices.length)];
+            indices.splice(indices.indexOf(randIndex),1);
+            enemy.myBoard.receiveAttack(randIndex);
+            return randIndex;
         }
+        const intelligentAttack = (enemy) => {
+            let randomDestroyedIndex = chooseRandomDestroyedIndex(getCurrentDestroyedIndexes(enemy));
+                console.log(randomDestroyedIndex);
+                let surroundingIndexes = getSurroundingIndexes(randomDestroyedIndex);
+                console.log(surroundingIndexes);
+                let filteredIndexes = filterSurroundingIndexes(enemy,surroundingIndexes);
+                console.log(filteredIndexes);
+                let randFiltered = filteredIndexes[Math.floor(Math.random() * filteredIndexes.length)];
+                console.log(randFiltered);
+                
+                console.log(enemy.myBoard.gridArr);
+                if(randFiltered === undefined){
+                    return mindlessAttack(enemy);
+                } else {
+                    indices.splice(indices.indexOf(randFiltered),1);
+                    enemy.myBoard.receiveAttack(randFiltered);
+                    return randFiltered
+                };
+        }
+        
+        
+        
+        if(difficulty === "easy"){
+            return mindlessAttack(enemy);
+        
+        } else if(difficulty === "average"){
+            if(getCurrentDestroyedIndexes(enemy).length === 0){
+            return mindlessAttack(enemy);
+            } else { return intelligentAttack(enemy)};
+            
+        }
+        
+        
     }
+    
+    
+
     return { myBoard, attackEnemy, randomAttack, getPlayerTurn, swapPlayerTurn, playertype };
 }
 

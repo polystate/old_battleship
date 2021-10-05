@@ -7,6 +7,7 @@ const displayHTML = () => {
     body.appendChild(shipChoice);
     body.appendChild(mainGameplay);
     
+    
     //Create Board Grids
     const createPlayerGrid = (id) => {
         const playerGrid = document.createElement("div");
@@ -30,7 +31,7 @@ const gamePlay = () => {
     const p1DOMgrid = document.getElementById("p1grid");
     const p2DOMgrid = document.getElementById("p2grid");
     const playerGrid = Player(5,"player");
-    const player2Grid = Player(5,"computer","easy");
+    const player2Grid = Player(5,"computer","average");
     playerGrid.swapPlayerTurn();
     player2Grid.myBoard.placeShipsRandom();
     playerGrid.myBoard.placeShipsRandom();
@@ -57,9 +58,9 @@ const gamePlay = () => {
 
     const changeSquareColor = (board,square,squareID) => {
         if(board.myBoard.gridArr[squareID] === null){
-            square.style = "background-color: black";
+            square.style = "background-color: black; opacity: 0.5";
         } else if(board.myBoard.gridArr[squareID] === false){
-            square.style = "background-color: green";
+            square.style = "background-color: green; opacity: 0.75";
         } 
     }
 
