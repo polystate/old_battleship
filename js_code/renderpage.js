@@ -4,7 +4,21 @@ const displayHTML = () => {
     shipChoice.setAttribute("id","shipchoice");
     const mainGameplay = document.createElement("div");
     mainGameplay.setAttribute("id","maingameplay");
+    const playerTitles = document.createElement("div");
+    playerTitles.setAttribute("id","playerTitles");
+    const dragShips = document.createElement("div");
+    dragShips.setAttribute("id","dragShips");
+    const playerTitle = document.createElement("p");
+    const computerTitle = document.createElement('p');
+    playerTitle.setAttribute("id","playerTitle");
+    computerTitle.setAttribute("id","computerTitle");
+    playerTitle.innerText = "Your Board";
+    computerTitle.innerText = "Computer Board";
+    playerTitles.appendChild(playerTitle);
+    playerTitles.appendChild(computerTitle);
     body.appendChild(shipChoice);
+    body.appendChild(playerTitles);
+    body.appendChild(dragShips);
     body.appendChild(mainGameplay);
     
     
@@ -23,6 +37,11 @@ const displayHTML = () => {
     }
     createPlayerGrid("p1grid");
     createPlayerGrid("p2grid");
+}
+
+const preGame = () => {
+
+    return false;
 }
 
 
@@ -48,7 +67,7 @@ const gamePlay = () => {
                     othergrid.swapPlayerTurn();
                     if(othergrid.myBoard.isGameOver()){
                         console.log("Computer has lost!");
-                        stopGame();
+                        stopGame("computer");
                     }
                     checkComputerTurn();
                 } 
@@ -58,7 +77,8 @@ const gamePlay = () => {
 
     const changeSquareColor = (board,square,squareID) => {
         if(board.myBoard.gridArr[squareID] === null){
-            square.style = "background-image: url('notfound.png'); background-repeat: no-repeat; background-size: cover; background-position: center center; opacity: 0.5";
+            square.style = "background-image: url('notfound.png'); background-repeat: no-repeat; background-size: cover; background-position: center center; background-color: black";
+           
         } else if(board.myBoard.gridArr[squareID] === false){
             square.style = "background-image: url('ship.png'); background-repeat: no-repeat; background-size: cover; background-position: center center;";
         } 
@@ -74,13 +94,28 @@ const gamePlay = () => {
     
     if(playerGrid.myBoard.isGameOver()){
         console.log("Player 1 has lost!");
-        stopGame();
+        stopGame("player1");
     }
     }
 
-    const stopGame = () => {
-        p1DOMgrid.style = "pointer-events: none;"
-        p2DOMgrid.style = "pointer-events: none;"
+    const stopGame = (whoLost) => {
+        playerTitle = document.getElementById("playerTitle");
+        computerTitle = document.getElementById("computerTitle");
+        if(whoLost === "player1"){
+            computerTitle.style = "color: green";
+            playerTitle.style = "color: red";
+            computerTitle.innerText = "Computer wins!";
+            playerTitle.innerText = "You lost!";
+            p1DOMgrid.style = "pointer-events: none;";
+            p2DOMgrid.style = "pointer-events: none; background-color: white";
+        } else{
+            computerTitle.style = "color: red";
+            playerTitle.style = "color: green";
+            playerTitle.innerText = "You win!";
+            computerTitle.innerText = "Computer lost!";
+            p1DOMgrid.style = "pointer-events: none; background-color: white";
+            p2DOMgrid.style = "pointer-events: none;";
+        }
     }
 
     syncBoard(p1DOMgrid, player2Grid, playerGrid);
@@ -93,7 +128,9 @@ const gamePlay = () => {
 
 const renderPage = (() => {
     displayHTML();
+    if(preGame()){
     gamePlay();
+    }
 })();
 
 // module.exports = renderGame;

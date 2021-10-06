@@ -3,8 +3,11 @@
 :root{
     --gamegrid-width: 40%;
     --gamegrid-height: 30rem;
-    --main-background: #1B4965;
+    --secondary-background: #1B4965;
+    --secondary-background: silver;
+    /* --secondary-background: black; */
     --main-background: black;
+    --border-radius: 25%;
     /* --choice-background: rgba(165, 42, 42, 0.137); */
     --square-color: rgba(245,245,245, 0.85);
     --border-color: rgba(0,0,0,0.25);
@@ -25,7 +28,9 @@ h1{
     font-size: calc(var(--root-html-size) * 4);
     padding: 0;
     margin: 0;
-    margin-top: 2rem;
+    font-family: 'Akronim','Times New Roman', Times, serif;
+    letter-spacing: 0.6rem;
+    
 }
 
 /*DIVs*/
@@ -37,6 +42,12 @@ h1{
     /* border: 1px solid brown; */
     display: flex;
     flex-direction: row;
+    border-radius: var(--border-radius);
+    background-color: var(--secondary-background);
+    width: 75%;
+    padding: 0;
+    margin: auto;
+    cursor: pointer;
 }
 
 #maingameplay{
@@ -45,8 +56,38 @@ h1{
     justify-content: space-around;
 }
 
+#header{
+    background-color: var(--main-background);
+    height: 10rem;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+}
+
+#playerTitles{
+    /* background-color: silver; */
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+    color: white;
+    font-family: 'Akronim','Times New Roman', Times, serif;
+    font-size: 2.5rem;
+}
+
+#dragShips{
+    background-color: silver;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+    
+}
+
 .gamegrid{
     border: none;
+    
     display: grid;
     grid-template-columns: repeat(10, 1fr);
     grid-template-rows: repeat(10, 1fr);
@@ -54,7 +95,11 @@ h1{
     width: var(--gamegrid-width);
     height: var(--gamegrid-height);
     cursor: pointer;
-    margin-top: var(--main-margin);
+    /* margin-top: var(--main-margin); */
+    margin-bottom: var(--main-margin);
+    /* background: white; */
+    /* use background white to highlight player's hidden ships */
+    
 }
 
 /*Classes*/
@@ -66,6 +111,7 @@ h1{
     opacity: 0.5;
     width: calc(var(--gamegrid-width) * 0.10px);
     height: calc(var(--gamegrid-height) * 0.10px);
+    border-radius: var(--border-radius);
 }
 
 #p2grid > .square:hover{
