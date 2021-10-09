@@ -35,7 +35,7 @@ h1{
 
 /*DIVs*/
 
-#shipchoice{
+#decoration{
     height: calc(var(--gamegrid-height) * 0.20);
     background-color: var(--choice-background);
     margin-top: calc(var(--main-margin) * 0.5);
@@ -78,12 +78,22 @@ h1{
 }
 
 #dragShips{
-    background-color: silver;
+    /* background-color: rgb(179, 21, 4); */
+    width: calc(var(--gamegrid-width) * 2.25);
+    margin: auto;
+    opacity: 0.5;
+    color: white;
     display: flex;
     flex-direction: row;
     justify-content: space-around;
-    
+    align-items: center;
+    margin-top: var(--main-margin);
+    height: 10rem;
+    font-family: Verdana, Geneva, Tahoma, sans-serif;
+    font-size: 2rem;
 }
+
+
 
 .gamegrid{
     border: none;
@@ -101,6 +111,12 @@ h1{
     /* use background white to highlight player's hidden ships */
     
 }
+
+.choices{
+    border: 1px solid white;
+}
+
+
 
 /*Classes*/
 

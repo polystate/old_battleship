@@ -72,15 +72,10 @@ const Player = (ships, playertype, difficulty) => {
         }
         const intelligentAttack = (enemy) => {
             let randomDestroyedIndex = chooseRandomDestroyedIndex(getCurrentDestroyedIndexes(enemy));
-                console.log(randomDestroyedIndex);
                 let surroundingIndexes = getSurroundingIndexes(randomDestroyedIndex);
                 console.log(surroundingIndexes);
                 let filteredIndexes = filterSurroundingIndexes(enemy,surroundingIndexes);
-                console.log(filteredIndexes);
                 let randFiltered = filteredIndexes[Math.floor(Math.random() * filteredIndexes.length)];
-                console.log(randFiltered);
-                
-                console.log(enemy.myBoard.gridArr);
                 if(randFiltered === undefined){
                     return mindlessAttack(enemy);
                 } else {
